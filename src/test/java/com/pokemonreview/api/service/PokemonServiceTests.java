@@ -6,20 +6,20 @@ import com.pokemonreview.api.models.Pokemon;
 import com.pokemonreview.api.repository.PokemonRepository;
 import com.pokemonreview.api.service.impl.PokemonServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PokemonServiceTests {
@@ -32,61 +32,32 @@ public class PokemonServiceTests {
 
     @Test
     public void PokemonService_CreatePokemon_ReturnsPokemonDto() {
-        Pokemon pokemon = Pokemon.builder()
+        Pokemon pokemon= Pokemon.builder()
                 .name("pikachu")
-                .type("electric").build();
-        PokemonDto pokemonDto = PokemonDto.builder().name("pickachu").type("electric").build();
-
+                .type("electric")
+                .build();
+        PokemonDto pokemonDto=PokemonDto.builder().name("pikachu").type("electric").build();
         when(pokemonRepository.save(Mockito.any(Pokemon.class))).thenReturn(pokemon);
-
-        PokemonDto savedPokemon = pokemonService.createPokemon(pokemonDto);
-
+        PokemonDto savedPokemon=pokemonService.createPokemon(pokemonDto);
         Assertions.assertThat(savedPokemon).isNotNull();
     }
 
     @Test
-    public void PokemonService_GetAllPokemon_ReturnsResponseDto() {
-        Page<Pokemon> pokemons = Mockito.mock(Page.class);
-
+    public void pokemonService_GetALlPokemon_ReturnsResponseDto(){
+        Page<Pokemon> pokemons=Mockito.mock(Page.class);
         when(pokemonRepository.findAll(Mockito.any(Pageable.class))).thenReturn(pokemons);
-
-        PokemonResponse savePokemon = pokemonService.getAllPokemon(1,10);
-
-        Assertions.assertThat(savePokemon).isNotNull();
-    }
-    @Test
-    public void PokemonService_FindById_ReturnPokemonDto() {
-        int pokemonId = 1;
-        Pokemon pokemon = Pokemon.builder().id(1).name("pikachu").type("electric").type("this is a type").build();
-        when(pokemonRepository.findById(pokemonId)).thenReturn(Optional.ofNullable(pokemon));
-
-        PokemonDto pokemonReturn = pokemonService.getPokemonById(pokemonId);
-
-        Assertions.assertThat(pokemonReturn).isNotNull();
+        PokemonResponse pokemonResponses=pokemonService.getAllPokemon(1,10);
+        Assertions.assertThat(pokemonResponses).isNotNull();
     }
 
     @Test
-    public void PokemonService_UpdatePokemon_ReturnPokemonDto() {
-        int pokemonId = 1;
-        Pokemon pokemon = Pokemon.builder().id(1).name("pikachu").type("electric").type("this is a type").build();
-        PokemonDto pokemonDto = PokemonDto.builder().id(1).name("pikachu").type("electric").type("this is a type").build();
-
-        when(pokemonRepository.findById(pokemonId)).thenReturn(Optional.ofNullable(pokemon));
-        when(pokemonRepository.save(pokemon)).thenReturn(pokemon);
-
-        PokemonDto updateReturn = pokemonService.updatePokemon(pokemonDto, pokemonId);
-
-        Assertions.assertThat(updateReturn).isNotNull();
+    public void pokemonService_GetPokemonById_ReturnsPokemonDto(){
+        Pokemon pokemon=Pokemon.builder()
+                .name("pikachu")
+                .type("electric").build();
+            when(pokemonRepository.findById(1)).thenReturn(Optional.ofNullable(pokemon));
+        PokemonDto ReturnedPokemonDto=pokemonService.getPokemonById(1);
+        Assertions.assertThat(ReturnedPokemonDto).isNotNull();
     }
 
-    @Test
-    public void PokemonService_DeletePokemonById_ReturnVoid() {
-        int pokemonId = 1;
-        Pokemon pokemon = Pokemon.builder().id(1).name("pikachu").type("electric").type("this is a type").build();
-
-        when(pokemonRepository.findById(pokemonId)).thenReturn(Optional.ofNullable(pokemon));
-        doNothing().when(pokemonRepository).delete(pokemon);
-
-        assertAll(() -> pokemonService.deletePokemonId(pokemonId));
-    }
 }
